@@ -1,0 +1,32 @@
+﻿@model EventEase.Models.AddEventViewModel
+
+<h1>Edit Event</h1>
+
+<form method="post" asp-action="Edit" asp-route-id="@ViewBag.EventId">
+
+    <div class="mt-3">
+        <label class="form-label">Event Name</label>
+        <input type="text" class="form-control" asp-for="EventName" />
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-control" asp-for="Description" />
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" asp-for="EventDate" />
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Venue ID</label>
+        <input type="number" class="form-control" asp-for="VenueId" />
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a asp-action="List" class="btn btn-secondary">Cancel</a>
+    </div>
+
+</form>

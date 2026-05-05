@@ -1,0 +1,51 @@
+﻿@model List<EventEase.Models.Entities.Event>
+
+<h1 class="mb-4">Events</h1>
+
+<form method="get" asp-action="List" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <input type="text"
+               name="searchString"
+               value="@ViewBag.CurrentFilter"
+               class="form-control"
+               placeholder="Search by Event name or Venue" />
+    </div>
+
+    <div class="col-md-6">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="List" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var evt in Model)
+                {
+                    <tr>
+                        <td>@evt.EventId</td>
+                        <td>@evt.EventName</td>
+                        <td>@evt.Description</td>
+                        <td>@evt.EventDate.ToString("yyyy-MM-dd")</td>
+                        <td>@evt.Venue?.VenueName</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@evt.EventId" class="btn btn-sm btn-warning">Edit</a>
+                            <a class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

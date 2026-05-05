@@ -1,0 +1,41 @@
+﻿@model List<EventEase.Models.Entities.Venue>
+
+<h1>Venues</h1>
+<form method="get" asp-action="List" class="mb-3">
+    <input type="text"
+           name="searchString"
+           value="@ViewBag.CurrentFilter"
+           class="form-control"
+           placeholder="Search by VenueName" />
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a asp-action="List" class="btn btn-secondary">Reset</a>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Capacity</th>
+            <th>Location</th>
+            <th>ImageUrl</th>
+        <tr />
+    </thead>
+    <tbody>
+        @foreach (var venue in Model)
+        {
+            <tr>
+                <td>@venue.VenueId</td>
+                <td>@venue.VenueName</td>
+                <td>@venue.Capacity</td>
+                <td>@venue.Location</td>
+                <td>@venue.ImageUrl</td>                
+                <td>
+                    <a>Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

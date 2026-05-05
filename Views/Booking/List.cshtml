@@ -1,0 +1,42 @@
+﻿@model List<EventEase.Models.Entities.Booking>
+
+<h1>Bookings</h1>
+<a asp-controller="Booking" asp-action="Add" class="btn btn-success mb-3">
+    + New Booking
+</a>
+<form method="get" asp-action="List" class="mb-3">
+    <input type="text"
+           name="searchString"
+           value="@ViewBag.CurrentFilter"
+           class="form-control"
+           placeholder="Search event or venue..." />
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a asp-action="List" class="btn btn-secondary">Reset</a>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Event</th>
+            <th>Venue</th>
+            <th>Booking Date</th>
+        <tr />
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.BookingID</td>
+                <td>@booking.Event.EventName</td>
+                <td>@booking.Venue.VenueName</td>
+                <td>@booking.BookingDate</td>
+                <td>
+                    <a>Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

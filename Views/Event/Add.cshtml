@@ -1,0 +1,35 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model EventEase.Models.AddEventViewModel
+
+<h1>Add Event</h1>
+
+<form method="post">
+    <div class="mt-3">
+        <label class="form-label">EventName</label>
+        <input type="text" class="form-control" asp-for="EventName"/>
+    </div>
+    
+    <div class="mt-3">
+        <label class="form-label">EventDate</label>
+        <input type="text" class="form-control" asp-for="EventDate" />
+    </div>
+    
+    <div class="mt-3">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-control" asp-for="Description" />
+    </div>
+    
+    <div class="mt-3">
+        <label class="form-label">VenueId</label>
+        <input type="text" class="form-control" asp-for="VenueId" />
+    </div>
+    
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
