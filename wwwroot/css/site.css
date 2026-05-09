@@ -20,3 +20,44 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+:root {
+    --qlink-primary: #002F6C; /* Deep blue */
+    --qlink-secondary: #FFC72C; /* Yellow */
+    --qlink-light: #F4F6F9;
+    --qlink-dark: #1A1A1A;
+}
+
+.navbar {
+    background-color: var(--qlink-primary) !important;
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand {
+    color: white !important;
+}
+
+.navbar .nav-link:hover {
+    color: var(--qlink-secondary) !important;
+}
+
+.btn-primary {
+    background-color: var(--qlink-primary);
+    border-color: var(--qlink-primary);
+}
+
+    .btn-primary:hover {
+        background-color: #001f4d;
+        border-color: #001f4d;
+    }
+
+.btn-success {
+    background-color: var(--qlink-secondary);
+    border-color: var(--qlink-secondary);
+    color: black;
+}
+
+.btn-success:hover {
+    background-color: #e6b800;
+    border-color: #e6b800;
+}

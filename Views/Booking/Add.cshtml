@@ -1,33 +1,57 @@
 ﻿@model EventEase.Models.AddBookingViewModel
 
-<h1>Reserve a booking</h1>
-<div asp-validation-summary="All" class="text-danger"></div>
-<form method="post">
+<div class="container mt-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 420px;">
 
-    <div class="mt-3">
-        <label class="form-label">Event</label>
-        <select class="form-control" asp-for="EventID">
-            <option value="">-- Select Event --</option>
-            @foreach (var e in ViewBag.Events)
-            {
-                <option value="@e.EventId">@e.EventName</option>
-            }
-        </select>
+        <div class="card-header bg-primary text-white text-center">
+            <h5 class="mb-0">Reserve Booking</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Add" asp-controller="Booking" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                <!-- Event -->
+                <div class="mb-2">
+                    <label asp-for="EventID" class="form-label">Event</label>
+                    <select asp-for="EventID" class="form-select form-select-sm">
+                        <option value="0">-- Select Event --</option>
+
+                        @foreach (var e in Model.Events)
+                        {
+                            <option value="@e.EventId">@e.EventName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="EventID" class="text-danger small"></span>
+                </div>
+
+                <!-- Venue -->
+                <div class="mb-3">
+                    <label asp-for="VenueId" class="form-label">Venue</label>
+                    <select asp-for="VenueId" class="form-select form-select-sm">
+                        <option value="0">-- Select Venue --</option>
+
+                        @foreach (var v in Model.Venues)
+                        {
+                            <option value="@v.VenueId">@v.VenueName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="VenueId" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm w-100">
+                    Book
+                </button>
+
+            </form>
+
+        </div>
     </div>
+</div>
 
-    <div class="mt-3">
-        <label class="form-label">Venue</label>
-        <select class="form-control" asp-for="VenueId">
-            <option value="">-- Select Venue --</option>
-            @foreach (var v in ViewBag.Venues)
-            {
-                <option value="@v.VenueId">@v.VenueName</option>
-            }
-        </select>
-    </div>
-
-    <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Book</button>
-    </div>
-
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

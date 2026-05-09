@@ -43,7 +43,7 @@ namespace EventEase.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("EventEase.Models.Entities.Event", b =>
@@ -70,7 +70,7 @@ namespace EventEase.Migrations
 
                     b.HasIndex("VenueId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("EventEase.Models.Entities.Venue", b =>
@@ -96,7 +96,7 @@ namespace EventEase.Migrations
 
                     b.HasKey("VenueId");
 
-                    b.ToTable("Venues");
+                    b.ToTable("Venues", (string)null);
                 });
 
             modelBuilder.Entity("EventEase.Models.Entities.Booking", b =>

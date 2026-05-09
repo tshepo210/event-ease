@@ -16,26 +16,49 @@ namespace EventEase.Controllers
         }
 
         [HttpGet]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
-            return View();
+            var viewModel = new AddEventViewModel
+            {
+                Venues = await dbContext.Venues.ToListAsync()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(AddEventViewModel viewModel)
         {
+            viewModel.Venues = await dbContext.Venues.ToListAsync();
+
+            if (viewModel.EventDate.HasValue && viewModel.EventDate.Value.Date < DateTime.Today)
+            {
+                ModelState.AddModelError("EventDate", "Event date cannot be in the past.");
+            }
+
+            if (viewModel.VenueId == null || viewModel.VenueId == 0)
+            {
+                ModelState.AddModelError("VenueId", "Please select a venue.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
             var evt = new Event
             {
                 EventName = viewModel.EventName,
-                EventDate = viewModel.EventDate,
                 Description = viewModel.Description,
-                VenueId = viewModel.VenueId
+                EventDate = viewModel.EventDate!.Value,
+                VenueId = viewModel.VenueId!.Value
             };
 
-            await dbContext.Events.AddAsync(evt);
+            dbContext.Events.Add(evt);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction("List"); // Better UX
+            return RedirectToAction(nameof(List));
         }
 
         [HttpGet]
@@ -43,6 +66,7 @@ namespace EventEase.Controllers
         {
             var eventsQuery = dbContext.Events
                 .Include(e => e.Venue)
+                .Include(e => e.Booking)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchString))
@@ -57,7 +81,15 @@ namespace EventEase.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            return View(events);
+            ViewBag.Venues = await dbContext.Venues.ToListAsync();
+
+            var viewModel = new EventListViewModel
+            {
+                Events = events,
+                Venues = await dbContext.Venues.ToListAsync()
+            };
+
+            return View(viewModel);
         }
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
@@ -69,9 +101,20 @@ namespace EventEase.Controllers
                 return NotFound();
             }
 
+            // Check if event has bookings
+            var hasBookings = await dbContext.Bookings
+                .AnyAsync(b => b.EventID == id);
+
+            if (hasBookings)
+            {
+                TempData["Error"] = "Cannot delete this event because it has existing bookings.";
+                return RedirectToAction("List");
+            }
+
             dbContext.Events.Remove(evt);
             await dbContext.SaveChangesAsync();
 
+            TempData["Success"] = "Event deleted successfully.";
             return RedirectToAction("List");
         }
         [HttpGet]
@@ -91,6 +134,10 @@ namespace EventEase.Controllers
                 Description = evt.Description,
                 VenueId = evt.VenueId
             };
+            if (viewModel.VenueId == null)
+            {
+                ModelState.AddModelError("VenueId", "Please select a venue.");
+            }
 
             ViewBag.EventId = evt.EventId; // pass ID to view
 
@@ -107,14 +154,40 @@ namespace EventEase.Controllers
                 return NotFound();
             }
 
+            if (!ModelState.IsValid)
+            {
+                viewModel.Venues = await dbContext.Venues.ToListAsync();
+                return View(viewModel);
+            }
+            if (!viewModel.EventDate.HasValue || viewModel.EventDate.Value < DateTime.Today)
+            {
+                ModelState.AddModelError("EventDate", "Event date cannot be in the past.");
+                viewModel.Venues = await dbContext.Venues.ToListAsync();
+                return View(viewModel);
+            }
             evt.EventName = viewModel.EventName;
-            evt.EventDate = viewModel.EventDate;
+            evt.EventDate = viewModel.EventDate.Value;
             evt.Description = viewModel.Description;
-            evt.VenueId = viewModel.VenueId;
+            evt.VenueId = viewModel.VenueId.Value;
 
+            dbContext.Update(evt);
             await dbContext.SaveChangesAsync();
-
             return RedirectToAction("List");
+        }
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            var events = await dbContext.Events
+                .Include(e => e.Venue)
+                .Include(e => e.Booking)
+                .ToListAsync();
+
+            var viewModel = new EventDashboardViewModel
+            {
+                Events = events
+            };
+
+            return View(viewModel);
         }
     }
 }
