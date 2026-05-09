@@ -1,42 +1,87 @@
 ﻿@model List<EventEase.Models.Entities.Booking>
 
-<h1>Bookings</h1>
-<a asp-controller="Booking" asp-action="Add" class="btn btn-success mb-3">
-    + New Booking
-</a>
-<form method="get" asp-action="List" class="mb-3">
-    <input type="text"
-           name="searchString"
-           value="@ViewBag.CurrentFilter"
-           class="form-control"
-           placeholder="Search event or venue..." />
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 
-    <br />
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
 
-    <button type="submit" class="btn btn-primary">Search</button>
-    <a asp-action="List" class="btn btn-secondary">Reset</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Bookings</h1>
+    <a asp-controller="Booking"
+       asp-action="Add"
+       class="btn btn-success">
+        + New Booking
+    </a>
+</div>
+
+<form method="get" asp-action="List" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <input type="text"
+               name="searchString"
+               value="@ViewBag.CurrentFilter"
+               class="form-control"
+               placeholder="Search booking id, event or venue..." />
+    </div>
+
+    <div class="col-md-6">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="List" class="btn btn-secondary">Reset</a>
+    </div>
 </form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Booking ID</th>
-            <th>Event</th>
-            <th>Venue</th>
-            <th>Booking Date</th>
-        <tr />
-    </thead>
-    <tbody>
-        @foreach (var booking in Model)
-        {
-            <tr>
-                <td>@booking.BookingID</td>
-                <td>@booking.Event.EventName</td>
-                <td>@booking.Venue.VenueName</td>
-                <td>@booking.BookingDate</td>
-                <td>
-                    <a>Edit</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Event</th>
+                    <th>Venue</th>
+                    <th>Booking Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in Model)
+                {
+                    <tr>
+                        <td>@booking.BookingID</td>
+                        <td>@booking.Event?.EventName</td>
+                        <td>@booking.Venue?.VenueName</td>
+                        <td>@booking.BookingDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <a asp-action="Edit"
+                               asp-route-id="@booking.BookingID"
+                               class="btn btn-sm btn-warning">
+                                Edit
+                            </a>
+
+                            <form asp-action="Delete"
+                                  method="post"
+                                  style="display:inline;">
+                                <input type="hidden"
+                                       name="id"
+                                       value="@booking.BookingID" />
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete this booking?');">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

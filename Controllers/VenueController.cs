@@ -1,6 +1,7 @@
 ﻿using EventEase.Data;
 using EventEase.Models;
 using EventEase.Models.Entities;
+using EventEase.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,12 +23,34 @@ namespace EventEase.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            return View();
+            return View(new AddVenueViewModel());
         }
         [HttpPost]
-        public async Task<IActionResult> Add(AddVenueViewModel viewModel, IFormFile image)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(AddVenueViewModel viewModel, IFormFile? image)
         {
-            var imageUrl = await blobService.UploadAsync(image);
+            if (image == null || image.Length == 0)
+            {
+                ModelState.AddModelError("ImageUrl", "Please select an image.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            string imageUrl;
+
+            try
+            {
+                imageUrl = await blobService.UploadAsync(image);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.ToString());
+                return View(viewModel);
+            }
+
 
             var venue = new Venue
             {
@@ -40,7 +63,7 @@ namespace EventEase.Controllers
             await dbContext.Venues.AddAsync(venue);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
         [HttpGet]
         public async Task<IActionResult> List(string searchString)
@@ -57,6 +80,32 @@ namespace EventEase.Controllers
             ViewBag.CurrentFilter = searchString;
 
             return View(venue);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var v = await dbContext.Venues.FindAsync(id);
+
+            if (v == null)
+            {
+                return NotFound();
+            }
+
+            // Check if venue has bookings
+            var hasBookings = await dbContext.Bookings
+                .AnyAsync(b => b.VenueId == id);
+
+            if (hasBookings)
+            {
+                TempData["Error"] = "Cannot delete this venue because it has existing bookings.";
+                return RedirectToAction("List");
+            }
+
+            dbContext.Venues.Remove(v);
+            await dbContext.SaveChangesAsync();
+
+            TempData["Success"] = "Venue deleted successfully.";
+            return RedirectToAction("List");
         }
     }
 }

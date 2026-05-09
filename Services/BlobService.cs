@@ -1,19 +1,33 @@
 ﻿using Azure.Storage.Blobs;
 
-public class BlobService
+namespace EventEase.Services
 {
-    private readonly string connectionString = "YOUR_CONNECTION_STRING";
-
-    public async Task<string> UploadAsync(IFormFile file)
+    public class BlobService
     {
-        var container = new BlobContainerClient(connectionString, "images");
-        await container.CreateIfNotExistsAsync();
+        private readonly IConfiguration configuration;
 
-        var blob = container.GetBlobClient(file.FileName);
+        public BlobService(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
-        using var stream = file.OpenReadStream();
-        await blob.UploadAsync(stream, true);
+        public async Task<string> UploadAsync(IFormFile file)
+        {
+            var connectionString = configuration.GetConnectionString("AzureStorage");
 
-        return blob.Uri.ToString();
+            var containerClient = new BlobContainerClient(connectionString, "venue-images");
+
+            await containerClient.CreateIfNotExistsAsync();
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+
+            var blobClient = containerClient.GetBlobClient(fileName);
+
+            using var stream = file.OpenReadStream();
+
+            await blobClient.UploadAsync(stream, true);
+
+            return blobClient.Uri.ToString();
+        }
     }
 }

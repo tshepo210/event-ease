@@ -1,35 +1,52 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model EventEase.Models.AddVenueViewModel
+
+<div class="container mt-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 420px;">
+
+        <div class="card-header bg-primary text-white text-center">
+            <h5 class="mb-0">Add Venue</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Add" asp-controller="Venue" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+
+                <div class="mb-2">
+                    <label asp-for="VenueName" class="form-label">Name</label>
+                    <input asp-for="VenueName" class="form-control form-control-sm" />
+                    <span asp-validation-for="VenueName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-2">
+                    <label asp-for="Location" class="form-label"></label>
+                    <input asp-for="Location" class="form-control form-control-sm" />
+                    <span asp-validation-for="Location" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-2">
+                    <label asp-for="Capacity" class="form-label"></label>
+                    <input asp-for="Capacity" type="number" class="form-control form-control-sm" />
+                    <span asp-validation-for="Capacity" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Image</label>
+                    <input type="file" name="image" class="form-control form-control-sm" />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm w-100">
+                    Submit
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }
-
-@model EventEase.Models.AddVenueViewModel
-
-<h1>Add Venue</h1>
-
-<form method="post">
-    <div class="mt-3">
-        <label class="form-label">VenueName</label>
-        <input type="text" class="form-control" asp-for="VenueName" />
-    </div>
-    
-    <div class="mt-3">
-        <label class="form-label">Location</label>
-        <input type="text" class="form-control" asp-for="Location" />
-    </div>
-    
-    <div class="mt-3">
-        <label class="form-label">Capacity</label>
-        <input type="text" class="form-control" asp-for="Capacity" />
-    </div>
-    
-    <div class="mt-3">
-        <label class="form-label">ImageUrl</label>
-        <input type="text" class="form-control" asp-for="ImageUrl" />
-    </div>
-    
-    <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
