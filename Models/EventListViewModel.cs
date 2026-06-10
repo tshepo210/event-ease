@@ -6,5 +6,6 @@ namespace EventEase.Models
     {
         public List<Event> Events { get; set; }
         public List<Venue> Venues { get; set; }
+        public List<EventType> EventTypes { get; set; } = new();
     }
 }

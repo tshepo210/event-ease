@@ -28,6 +28,18 @@
                     <span asp-validation-for="EventDate" class="text-danger small"></span>
                 </div>
 
+                <!-- Event Type -->
+                <div class="mb-2">
+                    <label asp-for="EventTypeId" class="form-label">Event Type</label>
+                    <select asp-for="EventTypeId" class="form-select form-select-sm">
+                        <option value="">-- Select Event Type --</option>
+                        @foreach (var t in Model.EventTypes)
+                        {
+                            <option value="@t.EventTypeId">@t.Name</option>
+                        }
+                    </select>
+                </div>
+
                 <!-- Description -->
                 <div class="mb-2">
                     <label asp-for="Description" class="form-label"></label>

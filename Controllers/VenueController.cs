@@ -58,6 +58,7 @@ namespace EventEase.Controllers
                 Location = viewModel.Location,
                 Capacity = viewModel.Capacity,
                 ImageUrl = imageUrl
+                , IsAvailable = viewModel.IsAvailable
             };
 
             await dbContext.Venues.AddAsync(venue);

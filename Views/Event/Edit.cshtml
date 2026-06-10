@@ -20,8 +20,25 @@
     </div>
 
     <div class="mt-3">
-        <label class="form-label">Venue ID</label>
-        <input type="number" class="form-control" asp-for="VenueId" />
+        <label class="form-label">Venue</label>
+        <select asp-for="VenueId" class="form-select">
+            <option value="">-- Select Venue --</option>
+            @foreach (var v in Model.Venues)
+            {
+                <option value="@v.VenueId">@v.VenueName</option>
+            }
+        </select>
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Event Type</label>
+        <select asp-for="EventTypeId" class="form-select">
+            <option value="">-- Select Event Type --</option>
+            @foreach (var t in Model.EventTypes)
+            {
+                <option value="@t.EventTypeId">@t.Name</option>
+            }
+        </select>
     </div>
 
     <div class="mt-3">
