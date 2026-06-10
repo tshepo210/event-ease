@@ -68,6 +68,8 @@
                     <th>Description</th>
                     <th>Date</th>
                     <th>Venue</th>
+                    <th>Event Type</th>
+                    <th>Availability</th>
                     <th></th>
                 </tr>
             </thead>
@@ -79,6 +81,17 @@
                         <td>@evt.Description</td>
                         <td>@evt.EventDate.ToString("yyyy-MM-dd")</td>
                         <td>@evt.Venue?.VenueName</td>
+                        <td>@evt.EventType?.Name</td>
+                        <td>
+                            @if (evt.Venue?.IsAvailable == true)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Unavailable</span>
+                            }
+                        </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@evt.EventId" class="btn btn-sm btn-warning">Edit</a>
                             <form asp-action="Delete"

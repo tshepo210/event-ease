@@ -43,6 +43,7 @@
                     <th>Capacity</th>
                     <th>Location</th>
                     <th>Image</th>
+                    <th>Availability</th>
                     <th></th>
                 </tr>
             </thead>
@@ -64,6 +65,16 @@
                             else
                             {
                                 <span class="text-muted">No Image</span>
+                            }
+                        </td>
+                        <td>
+                            @if (venue.IsAvailable)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Unavailable</span>
                             }
                         </td>
                         <td>
