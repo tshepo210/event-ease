@@ -11,5 +11,7 @@ namespace EventEase.Models.Entities
         public string? Location { get; set; }
         public string? Capacity { get; set; }
         public string? ImageUrl { get; set; }
+        // Availability flag for filtering
+        public bool IsAvailable { get; set; } = true;
     }
 }

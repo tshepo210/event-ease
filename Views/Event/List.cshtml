@@ -27,7 +27,33 @@
                placeholder="Search by Event name or Venue" />
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-2">
+        <select name="eventTypeId" class="form-select">
+            <option value="">All Types</option>
+            @foreach (var t in Model.EventTypes)
+            {
+                <option value="@t.EventTypeId" selected="@(ViewBag.SelectedEventType == t.EventTypeId ? "selected" : null)">@t.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <input type="date" name="startDate" value="@(ViewBag.StartDate ?? "")" class="form-control" />
+    </div>
+
+    <div class="col-md-2">
+        <input type="date" name="endDate" value="@(ViewBag.EndDate ?? "")" class="form-control" />
+    </div>
+
+    <div class="col-md-2">
+        <select name="venueAvailable" class="form-select">
+            <option value="">Any Availability</option>
+            <option value="true" selected="@(ViewBag.VenueAvailable == true ? "selected" : null)">Available</option>
+            <option value="false" selected="@(ViewBag.VenueAvailable == false ? "selected" : null)">Unavailable</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="List" class="btn btn-secondary">Reset</a>
     </div>
@@ -42,6 +68,8 @@
                     <th>Description</th>
                     <th>Date</th>
                     <th>Venue</th>
+                    <th>Event Type</th>
+                    <th>Availability</th>
                     <th></th>
                 </tr>
             </thead>
@@ -53,6 +81,17 @@
                         <td>@evt.Description</td>
                         <td>@evt.EventDate.ToString("yyyy-MM-dd")</td>
                         <td>@evt.Venue?.VenueName</td>
+                        <td>@evt.EventType?.Name</td>
+                        <td>
+                            @if (evt.Venue?.IsAvailable == true)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Unavailable</span>
+                            }
+                        </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@evt.EventId" class="btn btn-sm btn-warning">Edit</a>
                             <form asp-action="Delete"

@@ -20,7 +20,8 @@ namespace EventEase.Controllers
         {
             var viewModel = new AddEventViewModel
             {
-                Venues = await dbContext.Venues.ToListAsync()
+                Venues = await dbContext.Venues.ToListAsync(),
+                EventTypes = await dbContext.EventTypes.ToListAsync()
             };
 
             return View(viewModel);
@@ -31,6 +32,7 @@ namespace EventEase.Controllers
         public async Task<IActionResult> Add(AddEventViewModel viewModel)
         {
             viewModel.Venues = await dbContext.Venues.ToListAsync();
+            viewModel.EventTypes = await dbContext.EventTypes.ToListAsync();
 
             if (viewModel.EventDate.HasValue && viewModel.EventDate.Value.Date < DateTime.Today)
             {
@@ -53,6 +55,7 @@ namespace EventEase.Controllers
                 Description = viewModel.Description,
                 EventDate = viewModel.EventDate!.Value,
                 VenueId = viewModel.VenueId!.Value
+                , EventTypeId = viewModel.EventTypeId
             };
 
             dbContext.Events.Add(evt);
@@ -62,10 +65,11 @@ namespace EventEase.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(string searchString)
+        public async Task<IActionResult> List(string searchString, int? eventTypeId, DateTime? startDate, DateTime? endDate, bool? venueAvailable)
         {
             var eventsQuery = dbContext.Events
                 .Include(e => e.Venue)
+                .Include(e => e.EventType)
                 .Include(e => e.Booking)
                 .AsQueryable();
 
@@ -77,16 +81,39 @@ namespace EventEase.Controllers
                 );
             }
 
+            if (eventTypeId.HasValue && eventTypeId.Value > 0)
+            {
+                eventsQuery = eventsQuery.Where(e => e.EventTypeId == eventTypeId.Value);
+            }
+
+            if (startDate.HasValue)
+            {
+                eventsQuery = eventsQuery.Where(e => e.EventDate >= startDate.Value.Date);
+            }
+
+            if (endDate.HasValue)
+            {
+                eventsQuery = eventsQuery.Where(e => e.EventDate <= endDate.Value.Date);
+            }
+
+            if (venueAvailable.HasValue)
+            {
+                eventsQuery = eventsQuery.Where(e => e.Venue != null && e.Venue.IsAvailable == venueAvailable.Value);
+            }
+
             var events = await eventsQuery.ToListAsync(); // USE FILTERED QUERY
 
             ViewBag.CurrentFilter = searchString;
-
-            ViewBag.Venues = await dbContext.Venues.ToListAsync();
+            ViewBag.SelectedEventType = eventTypeId;
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+            ViewBag.VenueAvailable = venueAvailable;
 
             var viewModel = new EventListViewModel
             {
                 Events = events,
-                Venues = await dbContext.Venues.ToListAsync()
+                Venues = await dbContext.Venues.ToListAsync(),
+                EventTypes = await dbContext.EventTypes.ToListAsync()
             };
 
             return View(viewModel);
@@ -132,8 +159,10 @@ namespace EventEase.Controllers
                 EventName = evt.EventName,
                 EventDate = evt.EventDate,
                 Description = evt.Description,
-                VenueId = evt.VenueId
+                VenueId = evt.VenueId,
+                EventTypeId = evt.EventTypeId
             };
+            viewModel.EventTypes = await dbContext.EventTypes.ToListAsync();
             if (viewModel.VenueId == null)
             {
                 ModelState.AddModelError("VenueId", "Please select a venue.");
@@ -157,6 +186,7 @@ namespace EventEase.Controllers
             if (!ModelState.IsValid)
             {
                 viewModel.Venues = await dbContext.Venues.ToListAsync();
+                viewModel.EventTypes = await dbContext.EventTypes.ToListAsync();
                 return View(viewModel);
             }
             if (!viewModel.EventDate.HasValue || viewModel.EventDate.Value < DateTime.Today)
@@ -169,6 +199,7 @@ namespace EventEase.Controllers
             evt.EventDate = viewModel.EventDate.Value;
             evt.Description = viewModel.Description;
             evt.VenueId = viewModel.VenueId.Value;
+            evt.EventTypeId = viewModel.EventTypeId;
 
             dbContext.Update(evt);
             await dbContext.SaveChangesAsync();

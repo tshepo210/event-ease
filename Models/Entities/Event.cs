@@ -8,6 +8,9 @@
         public string? Description { get; set; }
         // Foreign Key
         public int VenueId { get; set; }
+        // Event type
+        public int? EventTypeId { get; set; }
+        public EventType? EventType { get; set; }
         // Navigation
         public Venue? Venue { get; set; }
         public ICollection<Booking>? Booking { get; set; }

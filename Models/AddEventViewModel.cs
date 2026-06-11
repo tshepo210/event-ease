@@ -18,5 +18,7 @@ namespace EventEase.Models
         public int? VenueId { get; set; }
 
         public List<Venue> Venues { get; set; } = new();
+        public int? EventTypeId { get; set; }
+        public List<EventType> EventTypes { get; set; } = new();
     }
 }
